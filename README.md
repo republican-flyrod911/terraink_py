@@ -1,0 +1,89 @@
+## Python CLI
+
+The repo now also ships a standalone Python renderer that skips the website entirely and writes map posters directly to `png` and `svg`.
+
+### Installation
+
+**Install from PyPI:**
+
+```bash
+pip install terraink_py
+```
+
+Or with [uv](https://github.com/astral-sh/uv) (recommended for CLI tools):
+
+```bash
+uv tool install terraink_py
+```
+
+### Usage
+
+Generate a poster from a place name:
+
+```bash
+terraink \
+  "Ganjingzi District, China" \
+  --theme midnight_blue \
+  --layout print_a4_portrait \
+  --distance-m 4000 \
+  --format png svg \
+  --output outputs/ganjingzi
+```
+
+`--location "..."` still works; the positional argument is just a shorter alias.
+
+### Development
+
+Use `uv` in this repo:
+
+```bash
+uv sync
+```
+
+Then run via:
+
+```bash
+uv run terraink --help
+```
+
+Build and publish to PyPI:
+
+```bash
+uv build
+uv publish
+```
+
+Generate from coordinates in Python code:
+
+```python
+from pathlib import Path
+
+from terraink_py import PosterRequest, generate_poster
+
+result = generate_poster(
+    PosterRequest(
+        output=Path("outputs/ganjingzi"),
+        formats=("png", "svg"),
+        lat=38.862405,
+        lon=121.513525,
+        title="Ganjingzi District",
+        subtitle="China",
+        theme="midnight_blue",
+        width_cm=21,
+        height_cm=29.7,
+        distance_m=4000,
+        include_buildings=True,
+    )
+)
+
+print(result.files)
+```
+
+Notes:
+
+- The Python renderer uses Nominatim + Overpass directly, so it is designed for city and regional posters rather than world-scale exports.
+- `svg` output is true vector geometry, not a browser screenshot wrapped in SVG.
+- Chinese place names now auto-fallback to common CJK system fonts on macOS/Linux; if your machine still lacks glyph coverage, pass `--font-file /path/to/font.ttf`.
+- PNG export needs `Pillow`; `uv sync` will install it automatically.
+- The PyPI package name is `terraink_py`, while the CLI command is `terraink`.
+

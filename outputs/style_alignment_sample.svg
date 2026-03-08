@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1700" viewBox="0 0 1200 1700" role="img" aria-label="GANJINGZI DISTRICT map poster">
+<defs>
+<linearGradient id="terraink-fade-top" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FAF7F2" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FAF7F2" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="terraink-fade-bottom" x1="0" y1="1" x2="0" y2="0">
+<stop offset="0%" stop-color="#FAF7F2" stop-opacity="1"/>
+<stop offset="100%" stop-color="#FAF7F2" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<rect width="1200" height="1700" fill="#FAF7F2"/>
+<path d="M 80 220 L 300 180 L 360 360 L 120 410 Z" fill="#E8EDE4" fill-opacity="1.000"/>
+<path d="M 0 1224 L 1200 1122 L 1200 1700 L 0 1700 Z" fill="#D4E4ED" fill-opacity="1.000"/>
+<path d="M 820 240 L 980 220 L 1010 380 L 860 400 Z" fill="#CEC3CB" fill-opacity="0.840"/>
+<path d="M 120 540 L 360 580 L 520 690 L 760 720" fill="none" stroke="#D4E4ED" stroke-width="0.62" stroke-opacity="0.920" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 120 1020 L 280 960 L 470 940 L 690 900 L 980 760" fill="none" stroke="#5d5a6d" stroke-width="0.58" stroke-opacity="0.700" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.16 0.93"/>
+<path d="M 0 1010 L 260 920 L 560 830 L 820 720 L 1200 540" fill="none" stroke="#E0E0E8" stroke-width="3.35" stroke-opacity="0.950" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 120 220 L 240 360 L 390 540 L 540 760" fill="none" stroke="#E0E0E8" stroke-width="2.06" stroke-opacity="0.864" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 840 170 L 780 360 L 720 560 L 650 780" fill="none" stroke="#E0E0E8" stroke-width="2.06" stroke-opacity="0.864" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 60 500 L 240 520 L 430 550 L 640 600 L 840 650" fill="none" stroke="#E0E0E8" stroke-width="1.14" stroke-opacity="0.579" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 210 1160 L 360 1000 L 540 860 L 720 760" fill="none" stroke="#E0E0E8" stroke-width="1.14" stroke-opacity="0.579" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 200 1400 L 340 1300 L 490 1210 L 610 1110" fill="none" stroke="#E0E0E8" stroke-width="0.8" stroke-opacity="0.745" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 0 1010 L 260 920 L 560 830 L 820 720 L 1200 540" fill="none" stroke="#6870A0" stroke-width="2.43" stroke-opacity="1.000" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 120 220 L 240 360 L 390 540 L 540 760" fill="none" stroke="#9898B8" stroke-width="1.42" stroke-opacity="0.952" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 840 170 L 780 360 L 720 560 L 650 780" fill="none" stroke="#9898B8" stroke-width="1.42" stroke-opacity="0.952" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 60 500 L 240 520 L 430 550 L 640 600 L 840 650" fill="none" stroke="#C4C2D0" stroke-width="0.99" stroke-opacity="0.787" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 210 1160 L 360 1000 L 540 860 L 720 760" fill="none" stroke="#C4C2D0" stroke-width="0.99" stroke-opacity="0.787" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 100 760 L 230 770 L 370 800 L 520 850 L 700 920" fill="none" stroke="#CCCCDA" stroke-width="0.63" stroke-opacity="0.507" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 760 360 L 880 450 L 1020 600 L 1110 780" fill="none" stroke="#CCCCDA" stroke-width="0.63" stroke-opacity="0.507" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 470 140 L 520 260 L 600 420 L 660 570" fill="none" stroke="#CCCCDA" stroke-width="0.63" stroke-opacity="0.507" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 200 1400 L 340 1300 L 490 1210 L 610 1110" fill="none" stroke="#D8D8E2" stroke-width="0.5" stroke-opacity="0.845" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="0" y="0" width="1200" height="425.0" fill="url(#terraink-fade-top)"/>
+<rect x="0" y="1275.0" width="1200" height="425.0" fill="url(#terraink-fade-bottom)"/>
+<text x="600" y="1436.5" fill="#5D5A6D" text-anchor="middle" dominant-baseline="middle" font-family="&quot;Space Grotesk&quot;, Arial, &quot;Helvetica Neue&quot;, sans-serif" font-size="62.5" font-weight="700">G  A  N  J  I  N  G  Z  I     D  I  S  T  R  I  C  T</text>
+<line x1="480" y1="1487.5" x2="720" y2="1487.5" stroke="#5D5A6D" stroke-width="1.35"/>
+<text x="600" y="1530" fill="#5D5A6D" text-anchor="middle" dominant-baseline="middle" font-family="&quot;Space Grotesk&quot;, Arial, &quot;Helvetica Neue&quot;, sans-serif" font-size="41.4" font-weight="300">CHINA</text>
+<text x="600" y="1581" fill="#5D5A6D" fill-opacity="0.75" text-anchor="middle" dominant-baseline="middle" font-family="&quot;IBM Plex Mono&quot;, Menlo, SFMono-Regular, monospace" font-size="26.1" font-weight="400">38.8624° N / 121.5134° E</text>
+<text x="1176" y="1666" fill="#5D5A6D" fill-opacity="0.55" text-anchor="end" dominant-baseline="baseline" font-family="&quot;IBM Plex Mono&quot;, Menlo, SFMono-Regular, monospace" font-size="13.5">© OpenStreetMap contributors</text>
+<text x="24" y="1666" fill="#5D5A6D" fill-opacity="0.55" text-anchor="start" dominant-baseline="baseline" font-family="&quot;IBM Plex Mono&quot;, Menlo, SFMono-Regular, monospace" font-size="13.5">created with terraink</text>
+</svg>
