@@ -20,37 +20,84 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
         help="Optional positional location query, equivalent to --location.",
     )
-    parser.add_argument("--output", required=True, help="Output file path or base path.")
+    parser.add_argument(
+        "--output", default="outputs/output.png", help="Output file path or base path."
+    )
     parser.add_argument("--format", nargs="+", default=["png"], choices=["png", "svg"])
     parser.add_argument("--location", help="Location query for Nominatim geocoding.")
     parser.add_argument("--lat", type=float, help="Latitude.")
     parser.add_argument("--lon", type=float, help="Longitude.")
     parser.add_argument("--title", help="Override poster title.")
     parser.add_argument("--subtitle", help="Override poster subtitle.")
-    parser.add_argument("--theme", default="midnight_blue", help=f"Theme id. Available: {themes}")
+    parser.add_argument(
+        "--theme", default="random", help=f"Theme id. Available: {themes}"
+    )
     parser.add_argument("--layout", help=f"Layout id. Available: {layouts}")
-    parser.add_argument("--width-cm", type=float, default=21.0, help="Poster width in centimeters.")
-    parser.add_argument("--height-cm", type=float, default=29.7, help="Poster height in centimeters.")
-    parser.add_argument("--distance-m", type=float, default=4000.0, help="Half-width map distance in meters.")
-    parser.add_argument("--dpi", type=int, default=300, help="Raster export DPI for PNG sizing.")
-    parser.add_argument("--font-file", type=Path, help="Optional TTF/OTF file used for PNG text rendering.")
-    parser.add_argument("--font-family", help="Font family name written into SVG text nodes.")
+    parser.add_argument(
+        "--width-cm", type=float, default=21.0, help="Poster width in centimeters."
+    )
+    parser.add_argument(
+        "--height-cm", type=float, default=29.7, help="Poster height in centimeters."
+    )
+    parser.add_argument(
+        "--distance-m",
+        type=float,
+        default=12000.0,
+        help="Half-width map distance in meters.",
+    )
+    parser.add_argument(
+        "--dpi", type=int, default=300, help="Raster export DPI for PNG sizing."
+    )
+    parser.add_argument(
+        "--font-file",
+        type=Path,
+        help="Optional TTF/OTF file used for PNG text rendering.",
+    )
+    parser.add_argument(
+        "--font-family", help="Font family name written into SVG text nodes."
+    )
     parser.add_argument("--cache-dir", type=Path, default=Path(".terraink-cache"))
     parser.add_argument("--overpass-url", default=DEFAULT_OVERPASS_URL)
-    parser.add_argument("--nominatim-url", default="https://nominatim.openstreetmap.org")
+    parser.add_argument(
+        "--nominatim-url", default="https://nominatim.openstreetmap.org"
+    )
     parser.add_argument("--user-agent", default="terraink/0.1")
     parser.add_argument("--timeout", type=int, default=90)
-    parser.add_argument("--hide-text", action="store_true", help="Do not draw poster title/subtitle/coords.")
-    parser.add_argument("--hide-credits", action="store_true", help="Do not draw footer credits.")
-    parser.add_argument("--include-buildings", action=argparse.BooleanOptionalAction, default=False)
-    parser.add_argument("--include-water", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-parks", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-aeroway", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-rail", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-roads", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-road-path", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-road-minor-low", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--include-road-outline", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--hide-text",
+        action="store_true",
+        help="Do not draw poster title/subtitle/coords.",
+    )
+    parser.add_argument(
+        "--hide-credits", action="store_true", help="Do not draw footer credits."
+    )
+    parser.add_argument(
+        "--include-buildings", action=argparse.BooleanOptionalAction, default=False
+    )
+    parser.add_argument(
+        "--include-water", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-parks", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-aeroway", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-rail", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-roads", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-road-path", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-road-minor-low", action=argparse.BooleanOptionalAction, default=True
+    )
+    parser.add_argument(
+        "--include-road-outline", action=argparse.BooleanOptionalAction, default=True
+    )
     return parser
 
 

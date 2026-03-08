@@ -4,12 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "terraink_py"
-version = "0.1.0"
+version = "0.3.0"
 description = "Standalone Python CLI for generating styled OSM map posters as PNG and SVG."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "Pillow>=10.4.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0.0",
 ]
 
 [project.scripts]
@@ -24,3 +29,8 @@ terraink_py = ["data/*.json"]
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["terraink_py*"]
+
+[tool.mypy]
+[[tool.mypy.overrides]]
+module = "pytest"
+ignore_missing_imports = true

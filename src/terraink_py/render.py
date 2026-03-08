@@ -4,6 +4,8 @@ import math
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+from PIL import ImageFont
+
 from .geo import MercatorProjector, format_coordinates
 from .models import CanvasSize, Coordinate, Point, PosterRequest, ProjectedScene, Theme
 from .text import (
@@ -122,7 +124,9 @@ def build_scene(
     )
 
 
-def project_path(projector: MercatorProjector, path: list[tuple[float, float]]) -> list[Point]:
+def project_path(
+    projector: MercatorProjector, path: list[tuple[float, float]]
+) -> list[Point]:
     return [projector.project(lon, lat) for lon, lat in path]
 
 
@@ -131,7 +135,9 @@ def render_svg(scene: ProjectedScene) -> str:
     metrics = compute_scene_metrics(scene)
     prefers_cjk = scene_prefers_cjk(scene)
     font_family = build_svg_font_stack(scene.font_family, prefers_cjk=prefers_cjk)
-    mono_family = build_svg_font_stack(scene.font_family, prefers_cjk=False, monospace=True)
+    mono_family = build_svg_font_stack(
+        scene.font_family, prefers_cjk=False, monospace=True
+    )
     aria_label = svg_attr(f"{scene.title} map poster")
 
     lines: list[str] = [
@@ -186,10 +192,30 @@ def render_svg(scene: ProjectedScene) -> str:
         )
 
     for layer_name, color, width_key, opacity_key in (
-        ("road_minor_high", theme.map.roads.minor_high, "minor_high_overview_width", "minor_high_overview_opacity"),
-        ("road_minor_mid", theme.map.roads.minor_mid, "minor_mid_overview_width", "minor_mid_overview_opacity"),
-        ("road_minor_low", theme.map.roads.minor_low, "minor_low_overview_width", "minor_low_overview_opacity"),
-        ("road_path", theme.map.roads.path, "path_overview_width", "path_overview_opacity"),
+        (
+            "road_minor_high",
+            theme.map.roads.minor_high,
+            "minor_high_overview_width",
+            "minor_high_overview_opacity",
+        ),
+        (
+            "road_minor_mid",
+            theme.map.roads.minor_mid,
+            "minor_mid_overview_width",
+            "minor_mid_overview_opacity",
+        ),
+        (
+            "road_minor_low",
+            theme.map.roads.minor_low,
+            "minor_low_overview_width",
+            "minor_low_overview_opacity",
+        ),
+        (
+            "road_path",
+            theme.map.roads.path,
+            "path_overview_width",
+            "path_overview_opacity",
+        ),
     ):
         opacity = metrics[opacity_key]
         if opacity <= 0.001:
@@ -226,9 +252,24 @@ def render_svg(scene: ProjectedScene) -> str:
 
     for layer_name, color, width_key, opacity_key in (
         ("road_major", theme.map.roads.major, "major_width", "major_opacity"),
-        ("road_minor_high", theme.map.roads.minor_high, "minor_high_width", "minor_high_opacity"),
-        ("road_minor_mid", theme.map.roads.minor_mid, "minor_mid_width", "minor_mid_opacity"),
-        ("road_minor_low", theme.map.roads.minor_low, "minor_low_width", "minor_low_opacity"),
+        (
+            "road_minor_high",
+            theme.map.roads.minor_high,
+            "minor_high_width",
+            "minor_high_opacity",
+        ),
+        (
+            "road_minor_mid",
+            theme.map.roads.minor_mid,
+            "minor_mid_width",
+            "minor_mid_opacity",
+        ),
+        (
+            "road_minor_low",
+            theme.map.roads.minor_low,
+            "minor_low_width",
+            "minor_low_opacity",
+        ),
         ("road_path", theme.map.roads.path, "path_width", "path_opacity"),
     ):
         opacity = metrics[opacity_key]
@@ -308,10 +349,30 @@ def render_png(scene: ProjectedScene, output_path: Path) -> None:
         )
 
     for layer_name, color, width_key, opacity_key in (
-        ("road_minor_high", theme.map.roads.minor_high, "minor_high_overview_width", "minor_high_overview_opacity"),
-        ("road_minor_mid", theme.map.roads.minor_mid, "minor_mid_overview_width", "minor_mid_overview_opacity"),
-        ("road_minor_low", theme.map.roads.minor_low, "minor_low_overview_width", "minor_low_overview_opacity"),
-        ("road_path", theme.map.roads.path, "path_overview_width", "path_overview_opacity"),
+        (
+            "road_minor_high",
+            theme.map.roads.minor_high,
+            "minor_high_overview_width",
+            "minor_high_overview_opacity",
+        ),
+        (
+            "road_minor_mid",
+            theme.map.roads.minor_mid,
+            "minor_mid_overview_width",
+            "minor_mid_overview_opacity",
+        ),
+        (
+            "road_minor_low",
+            theme.map.roads.minor_low,
+            "minor_low_overview_width",
+            "minor_low_overview_opacity",
+        ),
+        (
+            "road_path",
+            theme.map.roads.path,
+            "path_overview_width",
+            "path_overview_opacity",
+        ),
     ):
         alpha = opacity_to_alpha(metrics[opacity_key])
         if alpha <= 0:
@@ -344,9 +405,24 @@ def render_png(scene: ProjectedScene, output_path: Path) -> None:
 
     for layer_name, color, width_key, opacity_key in (
         ("road_major", theme.map.roads.major, "major_width", "major_opacity"),
-        ("road_minor_high", theme.map.roads.minor_high, "minor_high_width", "minor_high_opacity"),
-        ("road_minor_mid", theme.map.roads.minor_mid, "minor_mid_width", "minor_mid_opacity"),
-        ("road_minor_low", theme.map.roads.minor_low, "minor_low_width", "minor_low_opacity"),
+        (
+            "road_minor_high",
+            theme.map.roads.minor_high,
+            "minor_high_width",
+            "minor_high_opacity",
+        ),
+        (
+            "road_minor_mid",
+            theme.map.roads.minor_mid,
+            "minor_mid_width",
+            "minor_mid_opacity",
+        ),
+        (
+            "road_minor_low",
+            theme.map.roads.minor_low,
+            "minor_low_width",
+            "minor_low_opacity",
+        ),
         ("road_path", theme.map.roads.path, "path_width", "path_opacity"),
     ):
         alpha = opacity_to_alpha(metrics[opacity_key])
@@ -681,7 +757,9 @@ def opacity_to_alpha(opacity: float) -> int:
     return max(0, min(255, int(round(opacity * 255))))
 
 
-def draw_polyline(draw, points: list[Point], *, fill: tuple[int, int, int, int], width: float) -> None:
+def draw_polyline(
+    draw, points: list[Point], *, fill: tuple[int, int, int, int], width: float
+) -> None:
     draw.line(points, fill=fill, width=max(1, int(round(width))), joint="curve")
 
 
@@ -729,6 +807,8 @@ def apply_png_fades(image, color: str) -> None:
     width, height = image.size
     alpha_strip = Image.new("L", (1, height), 0)
     alpha_pixels = alpha_strip.load()
+    if alpha_pixels is None:
+        return
     for y in range(height):
         if y <= height * 0.25:
             alpha = int(255 * (1 - (y / max(height * 0.25, 1))))
@@ -782,9 +862,7 @@ def resolve_font(
     bold: bool,
     monospace: bool = False,
     text: str | None = None,
-) -> object:
-    from PIL import ImageFont
-
+) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     size = max(size, 12)
     candidates: list[str] = []
     if font_file is not None:
@@ -853,5 +931,7 @@ def draw_centered_text(
     total_width = sum(char_widths) + tracking * max(len(text) - 1, 0)
     x = position[0] - total_width / 2.0
     for char, char_width in zip(text, char_widths):
-        draw.text((x + char_width / 2.0, position[1]), char, fill=fill, font=font, anchor="mm")
+        draw.text(
+            (x + char_width / 2.0, position[1]), char, fill=fill, font=font, anchor="mm"
+        )
         x += char_width + tracking

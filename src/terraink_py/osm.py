@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import time
+from collections.abc import Sequence
 from urllib.parse import urlencode
 
 from .http import CachedHttpClient, HttpRequestError
@@ -9,7 +10,13 @@ from .models import Bounds, DEFAULT_OVERPASS_URL, LocationMetadata, PosterReques
 
 WATER_LANDUSE_VALUES = {"reservoir", "basin"}
 PARK_LEISURE_VALUES = {"park", "garden", "pitch", "playground"}
-PARK_LANDUSE_VALUES = {"grass", "recreation_ground", "forest", "meadow", "village_green"}
+PARK_LANDUSE_VALUES = {
+    "grass",
+    "recreation_ground",
+    "forest",
+    "meadow",
+    "village_green",
+}
 PARK_NATURAL_VALUES = {"wood", "grassland", "scrub", "heath", "wetland"}
 ROAD_MAJOR_CLASSES = {"motorway"}
 ROAD_MINOR_HIGH_CLASSES = {
@@ -75,7 +82,9 @@ OVERPASS_RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 LayerMap = dict[str, list[list[tuple[float, float]]]]
 
 
-def resolve_location(request: PosterRequest, client: CachedHttpClient) -> LocationMetadata:
+def resolve_location(
+    request: PosterRequest, client: CachedHttpClient
+) -> LocationMetadata:
     if request.location:
         return _geocode(request.location, request, client)
     assert request.lat is not None and request.lon is not None
@@ -160,7 +169,9 @@ def _fetch_overpass_payload(
             time.sleep(OVERPASS_RETRY_BACKOFF_SECONDS)
 
     joined_urls = ", ".join(endpoints)
-    raise RuntimeError(f"Overpass request failed after trying: {joined_urls}") from last_error
+    raise RuntimeError(
+        f"Overpass request failed after trying: {joined_urls}"
+    ) from last_error
 
 
 def _iter_overpass_urls(configured_url: str) -> list[str]:
@@ -182,7 +193,9 @@ def _should_retry_overpass(exc: HttpRequestError) -> bool:
 
 
 def build_overpass_query(bounds: Bounds, request: PosterRequest) -> str:
-    bbox = f"({bounds.south:.6f},{bounds.west:.6f},{bounds.north:.6f},{bounds.east:.6f})"
+    bbox = (
+        f"({bounds.south:.6f},{bounds.west:.6f},{bounds.north:.6f},{bounds.east:.6f})"
+    )
     selectors: list[str] = []
 
     def add_way_relation(selector: str) -> None:
@@ -191,7 +204,11 @@ def build_overpass_query(bounds: Bounds, request: PosterRequest) -> str:
 
     if request.include_buildings:
         add_way_relation('["building"]')
-    if request.include_roads or request.include_road_path or request.include_road_minor_low:
+    if (
+        request.include_roads
+        or request.include_road_path
+        or request.include_road_minor_low
+    ):
         selectors.append(f'way["highway"]{bbox};')
     if request.include_rail:
         selectors.append(f'way["railway"]{bbox};')
@@ -204,7 +221,9 @@ def build_overpass_query(bounds: Bounds, request: PosterRequest) -> str:
         add_way_relation('["landuse"~"reservoir|basin"]')
     if request.include_parks:
         add_way_relation('["leisure"~"park|garden|pitch|playground"]')
-        add_way_relation('["landuse"~"grass|recreation_ground|forest|meadow|village_green"]')
+        add_way_relation(
+            '["landuse"~"grass|recreation_ground|forest|meadow|village_green"]'
+        )
         add_way_relation('["natural"~"wood|grassland|scrub|heath|wetland"]')
     if request.include_aeroway:
         add_way_relation('["aeroway"]')
@@ -264,7 +283,11 @@ def extract_paths(element: dict, *, polygon: bool) -> list[list[tuple[float, flo
     if element_type == "way":
         path = geometry_to_points(element.get("geometry", []))
         if polygon:
-            return [close_path(path)] if is_closed_shape(path, element.get("tags", {})) else []
+            return (
+                [close_path(path)]
+                if is_closed_shape(path, element.get("tags", {}))
+                else []
+            )
         return [path] if len(path) >= 2 else []
 
     if element_type != "relation":
@@ -279,12 +302,19 @@ def extract_paths(element: dict, *, polygon: bool) -> list[list[tuple[float, flo
         preferred = [member for member in members if member.get("role") == "outer"] or [
             member for member in members if member.get("role") != "inner"
         ]
-        paths = [close_path(geometry_to_points(member.get("geometry", []))) for member in preferred]
-        return [path for path in paths if is_closed_shape(path, element.get("tags", {}))]
+        paths = [
+            close_path(geometry_to_points(member.get("geometry", [])))
+            for member in preferred
+        ]
+        return [
+            path for path in paths if is_closed_shape(path, element.get("tags", {}))
+        ]
 
     return [
         path
-        for path in (geometry_to_points(member.get("geometry", [])) for member in members)
+        for path in (
+            geometry_to_points(member.get("geometry", [])) for member in members
+        )
         if len(path) >= 2
     ]
 
@@ -297,13 +327,13 @@ def geometry_to_points(items: list[dict]) -> list[tuple[float, float]]:
     ]
 
 
-def close_path(path: list[tuple[float, float]]) -> list[tuple[float, float]]:
+def close_path(path: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
     if len(path) >= 3 and path[0] != path[-1]:
         return [*path, path[0]]
-    return path
+    return list(path)
 
 
-def is_closed_shape(path: list[tuple[float, float]], tags: dict[str, str]) -> bool:
+def is_closed_shape(path: Sequence[tuple[float, float]], tags: dict[str, str]) -> bool:
     if len(path) < 4:
         return False
     if path[0] == path[-1]:
@@ -311,7 +341,9 @@ def is_closed_shape(path: list[tuple[float, float]], tags: dict[str, str]) -> bo
     return tags.get("area") == "yes"
 
 
-def _geocode(query: str, request: PosterRequest, client: CachedHttpClient) -> LocationMetadata:
+def _geocode(
+    query: str, request: PosterRequest, client: CachedHttpClient
+) -> LocationMetadata:
     normalized_query = " ".join(query.split()).strip()
     if not normalized_query:
         raise RuntimeError("Location query is empty.")
@@ -337,7 +369,9 @@ def _geocode(query: str, request: PosterRequest, client: CachedHttpClient) -> Lo
                 break
 
     if last_error is not None:
-        raise RuntimeError(f"Could not geocode location: {normalized_query}") from last_error
+        raise RuntimeError(
+            f"Could not geocode location: {normalized_query}"
+        ) from last_error
     raise RuntimeError(f"Could not geocode location: {normalized_query}")
 
 

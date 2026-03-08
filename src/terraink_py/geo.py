@@ -64,7 +64,9 @@ def compute_poster_and_fetch_bounds(
         half_meters_x = safe_distance * safe_aspect
     fetch_half_meters = max(half_meters_x, half_meters_y) * fetch_padding
     return PosterBoundsResult(
-        poster_bounds=create_bounds(center.lat, center.lon, half_meters_x, half_meters_y),
+        poster_bounds=create_bounds(
+            center.lat, center.lon, half_meters_x, half_meters_y
+        ),
         fetch_bounds=create_bounds(
             center.lat,
             center.lon,
@@ -87,7 +89,9 @@ def resolve_canvas_size(
     requested_width = max(600, round(width_inches * dpi))
     requested_height = max(600, round(height_inches * dpi))
     total_pixels = requested_width * requested_height
-    area_factor = math.sqrt(max_pixels / total_pixels) if total_pixels > max_pixels else 1.0
+    area_factor = (
+        math.sqrt(max_pixels / total_pixels) if total_pixels > max_pixels else 1.0
+    )
     side_factor = (
         max_side / max(requested_width, requested_height)
         if max(requested_width, requested_height) > max_side
@@ -111,7 +115,9 @@ def mercator_x(lon: float) -> float:
 
 def mercator_y(lat: float) -> float:
     clamped = clamp(lat, -MAX_MERCATOR_LAT, MAX_MERCATOR_LAT)
-    return EARTH_RADIUS_M * math.log(math.tan(math.pi / 4.0 + to_radians(clamped) / 2.0))
+    return EARTH_RADIUS_M * math.log(
+        math.tan(math.pi / 4.0 + to_radians(clamped) / 2.0)
+    )
 
 
 @dataclass(slots=True, frozen=True)
@@ -125,7 +131,9 @@ class MercatorProjector:
     pad_y: float
 
     @classmethod
-    def from_bounds(cls, bounds: Bounds, width: int, height: int) -> "MercatorProjector":
+    def from_bounds(
+        cls, bounds: Bounds, width: int, height: int
+    ) -> "MercatorProjector":
         west_x = mercator_x(bounds.west)
         east_x = mercator_x(bounds.east)
         north_y = mercator_y(bounds.north)

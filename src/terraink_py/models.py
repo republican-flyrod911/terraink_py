@@ -103,7 +103,7 @@ class LocationMetadata:
 @dataclass(slots=True)
 class PosterRequest:
     output: Path
-    formats: tuple[OutputFormat, ...] = ("png",)
+    formats: tuple[str, ...] = ("png",)
     location: str | None = None
     lat: float | None = None
     lon: float | None = None
@@ -111,9 +111,9 @@ class PosterRequest:
     subtitle: str | None = None
     width_cm: float = 21.0
     height_cm: float = 29.7
-    distance_m: float = 4_000.0
+    distance_m: float = 12_000.0
     dpi: int = 300
-    theme: str = "midnight_blue"
+    theme: str = "random"
     layout: str | None = None
     font_file: Path | None = None
     font_family: str | None = None
@@ -159,7 +159,9 @@ class PosterRequest:
             )
         invalid_formats = sorted(set(self.formats) - {"png", "svg"})
         if invalid_formats:
-            raise ValueError(f"Unsupported output format(s): {', '.join(invalid_formats)}")
+            raise ValueError(
+                f"Unsupported output format(s): {', '.join(invalid_formats)}"
+            )
 
 
 @dataclass(slots=True, frozen=True)

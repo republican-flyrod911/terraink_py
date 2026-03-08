@@ -13,7 +13,9 @@ class HttpRequestError(RuntimeError):
 
 
 class CachedHttpClient:
-    def __init__(self, cache_dir: Path | None, user_agent: str, timeout_seconds: int) -> None:
+    def __init__(
+        self, cache_dir: Path | None, user_agent: str, timeout_seconds: int
+    ) -> None:
         self.cache_dir = cache_dir
         self.user_agent = user_agent
         self.timeout_seconds = timeout_seconds
@@ -53,7 +55,9 @@ class CachedHttpClient:
         if headers:
             req_headers.update(headers)
 
-        req = request.Request(url, data=body, headers=req_headers, method=method.upper())
+        req = request.Request(
+            url, data=body, headers=req_headers, method=method.upper()
+        )
         try:
             with request.urlopen(req, timeout=self.timeout_seconds) as response:
                 payload = response.read()
@@ -64,7 +68,9 @@ class CachedHttpClient:
                 status_code=exc.code,
             ) from exc
         except error.URLError as exc:
-            raise HttpRequestError(f"{method.upper()} {url} failed: {exc.reason}") from exc
+            raise HttpRequestError(
+                f"{method.upper()} {url} failed: {exc.reason}"
+            ) from exc
 
         if cache_path is not None:
             cache_path.write_bytes(payload)

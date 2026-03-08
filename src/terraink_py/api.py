@@ -3,7 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from .data import get_layout, get_theme
-from .geo import CM_PER_INCH, MercatorProjector, compute_poster_and_fetch_bounds, resolve_canvas_size
+from .geo import (
+    CM_PER_INCH,
+    MercatorProjector,
+    compute_poster_and_fetch_bounds,
+    resolve_canvas_size,
+)
 from .http import CachedHttpClient
 from .models import Coordinate, PosterRequest, PosterResult
 from .osm import fetch_osm_layers, resolve_location
@@ -35,7 +40,9 @@ class PosterGenerator:
             aspect_ratio=prepared.width_cm / prepared.height_cm,
         )
         layers = fetch_osm_layers(bounds.fetch_bounds, prepared, client)
-        projector = MercatorProjector.from_bounds(bounds.poster_bounds, size.width, size.height)
+        projector = MercatorProjector.from_bounds(
+            bounds.poster_bounds, size.width, size.height
+        )
         theme = get_theme(prepared.theme)
         scene = build_scene(
             size=size,

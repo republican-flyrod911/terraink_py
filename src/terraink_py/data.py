@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import random
 from functools import lru_cache
 from importlib.resources import files
 from typing import Any
@@ -35,7 +36,9 @@ def load_themes() -> dict[str, Theme]:
             map=ThemeMapColors(
                 land=str(map_colors.get("land", "#0A1628")),
                 water=str(map_colors.get("water", "#061020")),
-                waterway=str(map_colors.get("waterway", map_colors.get("water", "#061020"))),
+                waterway=str(
+                    map_colors.get("waterway", map_colors.get("water", "#061020"))
+                ),
                 parks=str(map_colors.get("parks", "#0F2235")),
                 buildings=str(map_colors.get("buildings", "#6E5A45")),
                 aeroway=str(map_colors.get("aeroway", "#0F2235")),
@@ -55,7 +58,11 @@ def load_themes() -> dict[str, Theme]:
 
 def get_theme(theme_id: str) -> Theme:
     themes = load_themes()
-    return themes.get(theme_id, themes.get(DEFAULT_THEME_ID) or next(iter(themes.values())))
+    if theme_id == "random":
+        return random.choice(list(themes.values()))
+    return themes.get(
+        theme_id, themes.get(DEFAULT_THEME_ID) or next(iter(themes.values()))
+    )
 
 
 @lru_cache(maxsize=1)
@@ -81,4 +88,6 @@ def load_layouts() -> dict[str, Layout]:
 
 def get_layout(layout_id: str) -> Layout:
     layouts = load_layouts()
-    return layouts.get(layout_id, layouts.get(DEFAULT_LAYOUT_ID) or next(iter(layouts.values())))
+    return layouts.get(
+        layout_id, layouts.get(DEFAULT_LAYOUT_ID) or next(iter(layouts.values()))
+    )

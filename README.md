@@ -1,6 +1,5 @@
-## Python CLI
-
-The repo now also ships a standalone Python renderer that skips the website entirely and writes map posters directly to `png` and `svg`.
+The repo is python version of [terraink](https://github.com/yousifamanuel/terraink)
+now also ships a standalone Python renderer that skips the website entirely and writes map posters directly to `png` and `svg`.
 
 ### Installation
 
@@ -46,13 +45,6 @@ Then run via:
 uv run terraink --help
 ```
 
-Build and publish to PyPI:
-
-```bash
-uv build
-uv publish
-```
-
 Generate from coordinates in Python code:
 
 ```python
@@ -84,6 +76,4 @@ Notes:
 - The Python renderer uses Nominatim + Overpass directly, so it is designed for city and regional posters rather than world-scale exports.
 - `svg` output is true vector geometry, not a browser screenshot wrapped in SVG.
 - Chinese place names now auto-fallback to common CJK system fonts on macOS/Linux; if your machine still lacks glyph coverage, pass `--font-file /path/to/font.ttf`.
-- PNG export needs `Pillow`; `uv sync` will install it automatically.
 - The PyPI package name is `terraink_py`, while the CLI command is `terraink`.
-
