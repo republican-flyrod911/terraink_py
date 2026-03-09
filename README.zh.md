@@ -4,6 +4,9 @@
 
 ## 安装
 
+![telegram-cloud-photo-size-5-6156789869284363624-w](https://github.com/user-attachments/assets/ee69b0b6-1264-4518-803c-cdc2bc3e4b64)
+
+
 **从 PyPI 安装：**
 
 ```bash
