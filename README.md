@@ -1,4 +1,6 @@
 The repo is python version of [terraink](https://github.com/yousifamanuel/terraink)
+
+[中文文档](README.zh.md)
 now also ships a standalone Python renderer that skips the website entirely and writes map posters directly to `png` and `svg`.
 
 ### Installation
