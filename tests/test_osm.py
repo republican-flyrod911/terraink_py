@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import threading
 from pathlib import Path
+from typing import cast
 
-
+from terraink_py.http import CachedHttpClient
 from terraink_py.models import Bounds, PosterRequest
 from terraink_py.osm import (
+    _fetch_overpass_parallel,
     _select_best_nominatim_result,
     build_geocode_queries,
     build_geocode_search_plan,
@@ -27,6 +30,32 @@ from terraink_py.osm import (
     ROAD_PATH_CLASSES,
     WATER_LANDUSE_VALUES,
 )
+
+
+class StubOverpassClient:
+    def __init__(self) -> None:
+        self.slow_started = threading.Event()
+        self.release_slow = threading.Event()
+        self.slow_finished = threading.Event()
+
+    def request_json(
+        self,
+        method: str,
+        url: str,
+        *,
+        body: bytes | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict:
+        del method, body, headers
+        if url == "slow":
+            self.slow_started.set()
+            self.release_slow.wait(timeout=1.0)
+            self.slow_finished.set()
+            return {"endpoint": url}
+        if url == "fast":
+            self.slow_started.wait(timeout=1.0)
+            return {"endpoint": url}
+        raise RuntimeError(f"unexpected endpoint: {url}")
 
 
 class TestBuildOverpassQuery:
@@ -160,7 +189,7 @@ class TestBuildOverpassQuery:
         query = build_overpass_query(bounds, request)
         assert query.startswith("[out:json]")
         assert "[timeout:" in query
-        assert query.endswith("out geom;")
+        assert query.endswith("out geom qt;")
 
     def test_bbox_format(self) -> None:
         bounds = Bounds(south=1.5, west=2.5, north=3.5, east=4.5)
@@ -172,6 +201,32 @@ class TestBuildOverpassQuery:
         )
         query = build_overpass_query(bounds, request)
         assert "(1.500000,2.500000,3.500000,4.500000)" in query
+
+
+class TestFetchOverpassParallel:
+    def test_returns_first_success_without_waiting_for_slower_endpoints(self) -> None:
+        client = StubOverpassClient()
+        result: dict[str, dict | None] = {"payload": None}
+        finished = threading.Event()
+
+        def call_fetch() -> None:
+            result["payload"] = _fetch_overpass_parallel(
+                "query",
+                ["slow", "fast"],
+                cast(CachedHttpClient, client),
+            )
+            finished.set()
+
+        thread = threading.Thread(target=call_fetch)
+        thread.start()
+
+        assert client.slow_started.wait(timeout=0.5)
+        assert finished.wait(timeout=0.2)
+        assert result["payload"] == {"endpoint": "fast"}
+
+        client.release_slow.set()
+        assert client.slow_finished.wait(timeout=1.0)
+        thread.join(timeout=1.0)
 
 
 class TestClassifyPolygonLayer:

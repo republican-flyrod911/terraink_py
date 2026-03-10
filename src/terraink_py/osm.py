@@ -3,6 +3,9 @@ from __future__ import annotations
 import re
 import time
 from collections.abc import Sequence
+from queue import Queue
+from threading import Thread
+from typing import cast
 from urllib.parse import urlencode
 
 from .http import CachedHttpClient, HttpRequestError
@@ -186,8 +189,57 @@ def _fetch_overpass_payload(
     request: PosterRequest,
     client: CachedHttpClient,
 ) -> dict:
-    last_error: Exception | None = None
     endpoints = list(_iter_overpass_urls(request.overpass_url))
+
+    if len(endpoints) > 1:
+        result = _fetch_overpass_parallel(query, endpoints, client)
+        if result is not None:
+            return result
+
+    return _fetch_overpass_sequential(query, endpoints, client)
+
+
+def _fetch_overpass_parallel(
+    query: str,
+    endpoints: list[str],
+    client: CachedHttpClient,
+) -> dict | None:
+    """Race multiple Overpass endpoints and return the first successful payload."""
+
+    body = query.encode("utf-8")
+    headers = {"Content-Type": "text/plain; charset=utf-8"}
+    result_queue: Queue[tuple[bool, dict | Exception]] = Queue()
+
+    def _fetch_one(url: str) -> None:
+        try:
+            payload = client.request_json("POST", url, body=body, headers=headers)
+        except Exception as exc:
+            result_queue.put((False, exc))
+            return
+        result_queue.put((True, payload))
+
+    for index, url in enumerate(endpoints):
+        thread = Thread(
+            target=_fetch_one,
+            args=(url,),
+            name=f"terraink-overpass-{index}",
+            daemon=True,
+        )
+        thread.start()
+
+    for _ in endpoints:
+        succeeded, value = result_queue.get()
+        if succeeded:
+            return cast(dict, value)
+    return None
+
+
+def _fetch_overpass_sequential(
+    query: str,
+    endpoints: list[str],
+    client: CachedHttpClient,
+) -> dict:
+    last_error: Exception | None = None
     for endpoint_index, url in enumerate(endpoints):
         for attempt in range(OVERPASS_MAX_RETRIES + 1):
             try:
@@ -271,7 +323,7 @@ def build_overpass_query(bounds: Bounds, request: PosterRequest) -> str:
 
     if not selectors:
         return ""
-    return f"[out:json][timeout:{request.timeout_seconds}];({''.join(selectors)});out geom;"
+    return f"[out:json][timeout:{request.timeout_seconds}];({''.join(selectors)});out geom qt;"
 
 
 def classify_polygon_layer(tags: dict[str, str]) -> str | None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -51,6 +52,7 @@ class CachedHttpClient:
         req_headers = {
             "User-Agent": self.user_agent,
             "Accept": "application/json",
+            "Accept-Encoding": "gzip, deflate",
         }
         if headers:
             req_headers.update(headers)
@@ -61,6 +63,8 @@ class CachedHttpClient:
         try:
             with request.urlopen(req, timeout=self.timeout_seconds) as response:
                 payload = response.read()
+                if response.headers.get("Content-Encoding") == "gzip":
+                    payload = gzip.decompress(payload)
         except error.HTTPError as exc:
             snippet = exc.read(400).decode("utf-8", errors="replace")
             raise HttpRequestError(

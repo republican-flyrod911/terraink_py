@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import heapq
 import math
+from functools import lru_cache
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -229,10 +231,17 @@ def project_line_paths(
 
 
 def path_intersects_bounds(path: list[tuple[float, float]], bounds: Bounds) -> bool:
-    min_lon = min(point[0] for point in path)
-    max_lon = max(point[0] for point in path)
-    min_lat = min(point[1] for point in path)
-    max_lat = max(point[1] for point in path)
+    min_lon = min_lat = float("inf")
+    max_lon = max_lat = float("-inf")
+    for lon, lat in path:
+        if lon < min_lon:
+            min_lon = lon
+        if lon > max_lon:
+            max_lon = lon
+        if lat < min_lat:
+            min_lat = lat
+        if lat > max_lat:
+            max_lat = lat
     return not (
         max_lon < bounds.west
         or min_lon > bounds.east
@@ -448,22 +457,55 @@ def simplify_polygon(points: list[Point], tolerance: float) -> list[Point]:
             closed.append(closed[0])
         return closed
 
-    changed = True
-    while changed and len(ring) > 3:
-        changed = False
-        simplified: list[Point] = []
-        ring_length = len(ring)
-        for index, point in enumerate(ring):
-            previous = ring[index - 1]
-            following = ring[(index + 1) % ring_length]
-            distance = point_to_segment_distance(point, previous, following)
-            if distance <= tolerance:
-                changed = True
-                continue
-            simplified.append(point)
-        if len(simplified) < 3:
+    # Visvalingam-Whyatt: iteratively remove the vertex whose triangle
+    # (formed with its two neighbours) has the smallest area, until all
+    # remaining triangles exceed the area threshold.  This naturally
+    # handles closed rings and preserves overall shape better than DP.
+    area_threshold = tolerance * tolerance * 0.5
+
+    n = len(ring)
+    removed = [False] * n
+    prev_idx = [(i - 1) % n for i in range(n)]
+    next_idx = [(i + 1) % n for i in range(n)]
+
+    def _triangle_area(i: int) -> float:
+        p = ring[prev_idx[i]]
+        c = ring[i]
+        nx = ring[next_idx[i]]
+        return (
+            abs((p[0] - nx[0]) * (c[1] - p[1]) - (p[0] - c[0]) * (nx[1] - p[1])) * 0.5
+        )
+
+    areas = [0.0] * n
+    heap: list[tuple[float, int, int]] = []  # (area, seq, index)
+    seq = 0
+    for i in range(n):
+        a = _triangle_area(i)
+        areas[i] = a
+        heapq.heappush(heap, (a, seq, i))
+        seq += 1
+
+    remaining = n
+    while heap and remaining > 3:
+        a, _, i = heapq.heappop(heap)
+        if removed[i] or a != areas[i]:
+            continue
+        if a >= area_threshold:
             break
-        ring = simplified
+        removed[i] = True
+        remaining -= 1
+        p = prev_idx[i]
+        nx = next_idx[i]
+        next_idx[p] = nx
+        prev_idx[nx] = p
+        for j in (p, nx):
+            if not removed[j]:
+                new_a = max(_triangle_area(j), a)
+                areas[j] = new_a
+                heapq.heappush(heap, (new_a, seq, j))
+                seq += 1
+
+    ring = [ring[i] for i in range(n) if not removed[i]]
 
     if len(ring) < 3:
         return []
@@ -1129,18 +1171,22 @@ def clamp(value: float, minimum: float, maximum: float) -> float:
     return min(max(value, minimum), maximum)
 
 
+@lru_cache(maxsize=64)
 def hex_to_rgba(value: str, alpha: int = 255) -> tuple[int, int, int, int]:
     raw = value.strip().lstrip("#")
     if len(raw) == 3:
         raw = "".join(ch * 2 for ch in raw)
     if len(raw) != 6:
         return (0, 0, 0, alpha)
-    return (
-        int(raw[0:2], 16),
-        int(raw[2:4], 16),
-        int(raw[4:6], 16),
-        alpha,
-    )
+    try:
+        return (
+            int(raw[0:2], 16),
+            int(raw[2:4], 16),
+            int(raw[4:6], 16),
+            alpha,
+        )
+    except ValueError:
+        return (0, 0, 0, alpha)
 
 
 def opacity_to_alpha(opacity: float) -> int:
@@ -1165,6 +1211,7 @@ def draw_dashed_polyline(
     if len(points) < 2:
         return
     width_int = max(1, int(round(width)))
+    segments: list[tuple[float, float, float, float]] = []
     for start, end in zip(points, points[1:]):
         x1, y1 = start
         x2, y2 = end
@@ -1176,18 +1223,17 @@ def draw_dashed_polyline(
         position = 0.0
         while position < segment_length:
             dash_end = min(position + dash, segment_length)
-            draw.line(
+            segments.append(
                 (
                     x1 + dx * position,
                     y1 + dy * position,
                     x1 + dx * dash_end,
                     y1 + dy * dash_end,
-                ),
-                fill=fill,
-                width=width_int,
-                joint="curve",
+                )
             )
             position += dash + gap
+    for seg in segments:
+        draw.line(seg, fill=fill, width=width_int)
 
 
 def apply_png_fades(image, color: str) -> None:
@@ -1195,20 +1241,23 @@ def apply_png_fades(image, color: str) -> None:
 
     rgb = hex_to_rgba(color, 255)
     width, height = image.size
-    alpha_strip = Image.new("L", (1, height), 0)
-    alpha_pixels = alpha_strip.load()
-    if alpha_pixels is None:
-        return
-    for y in range(height):
-        if y <= height * 0.25:
-            alpha = int(255 * (1 - (y / max(height * 0.25, 1))))
-        elif y >= height * 0.75:
-            alpha = int(255 * ((y - height * 0.75) / max(height * 0.25, 1)))
-        else:
-            alpha = 0
-        alpha_pixels[0, y] = max(0, min(255, alpha))
+    top_end = int(height * 0.25) or 1
+    bottom_start = int(height * 0.75)
+
+    alpha_values = [0] * height
+    top_steps = max(1, top_end - 1)
+    for index in range(top_end):
+        alpha_values[index] = round(255 * (top_steps - index) / top_steps)
+
+    bottom_length = height - bottom_start
+    bottom_steps = max(1, bottom_length - 1)
+    for offset in range(bottom_length):
+        alpha_values[bottom_start + offset] = round(255 * offset / bottom_steps)
+
+    alpha_strip = Image.new("L", (1, height))
+    alpha_strip.putdata(alpha_values)
     overlay = Image.new("RGBA", image.size, (rgb[0], rgb[1], rgb[2], 0))
-    overlay.putalpha(alpha_strip.resize((width, height)))
+    overlay.putalpha(alpha_strip.resize((width, height), Image.Resampling.NEAREST))
     image.alpha_composite(overlay)
 
 
@@ -1253,11 +1302,24 @@ def resolve_font(
     monospace: bool = False,
     text: str | None = None,
 ) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    needs_cjk = contains_cjk(text)
+    font_file_str = str(font_file) if font_file is not None else None
+    return _resolve_font_cached(font_file_str, size, bold, monospace, needs_cjk)
+
+
+@lru_cache(maxsize=32)
+def _resolve_font_cached(
+    font_file_str: str | None,
+    size: int,
+    bold: bool,
+    monospace: bool,
+    needs_cjk: bool,
+) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     size = max(size, 12)
     candidates: list[str] = []
-    if font_file is not None:
-        candidates.append(str(font_file))
-    if contains_cjk(text):
+    if font_file_str is not None:
+        candidates.append(font_file_str)
+    if needs_cjk:
         candidates.extend(
             CJK_FONT_CANDIDATES_BOLD if bold else CJK_FONT_CANDIDATES_REGULAR
         )
