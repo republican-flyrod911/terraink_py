@@ -25,6 +25,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--format", nargs="+", default=["png"], choices=["png", "svg"])
     parser.add_argument("--location", help="Location query for Nominatim geocoding.")
+    parser.add_argument(
+        "--running_page",
+        help=(
+            "GitHub repo slug or parquet URL for running_page data, "
+            'for example "yihong0618/run".'
+        ),
+    )
     parser.add_argument("--lat", type=float, help="Latitude.")
     parser.add_argument("--lon", type=float, help="Longitude.")
     parser.add_argument("--title", help="Override poster title.")
@@ -114,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         output=Path(args.output),
         formats=tuple(args.format),
         location=args.location or args.query,
+        running_page=args.running_page,
         lat=args.lat,
         lon=args.lon,
         title=args.title,

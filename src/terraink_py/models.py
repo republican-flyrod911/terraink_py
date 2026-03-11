@@ -12,6 +12,7 @@ ProgressStage = Literal[
     "resolving_location",
     "computing_bounds",
     "fetching_map_data",
+    "loading_running_routes",
     "building_scene",
     "rendering_output",
     "done",
@@ -116,6 +117,7 @@ class PosterRequest:
     output: Path
     formats: tuple[str, ...] = ("png",)
     location: str | None = None
+    running_page: str | None = None
     lat: float | None = None
     lon: float | None = None
     title: str | None = None

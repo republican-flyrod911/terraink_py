@@ -20,6 +20,7 @@ from .models import (
 )
 from .osm import fetch_osm_layers, resolve_location
 from .render import build_scene, render_png, render_svg
+from .running_page import RUNNING_ROUTE_LAYER, load_running_page_routes
 
 
 class PosterGenerator:
@@ -63,6 +64,10 @@ class PosterGenerator:
                 "fetching_map_data", percent, message
             ),
         )
+        reporter.emit("loading_running_routes", 60, "Loading running page routes")
+        running_routes = load_running_page_routes(prepared)
+        if running_routes:
+            layers[RUNNING_ROUTE_LAYER] = running_routes
         projector = MercatorProjector.from_bounds(
             bounds.poster_bounds, size.width, size.height
         )
