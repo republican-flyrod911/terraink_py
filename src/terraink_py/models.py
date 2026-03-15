@@ -12,6 +12,7 @@ ProgressStage = Literal[
     "resolving_location",
     "computing_bounds",
     "fetching_map_data",
+    "loading_running_routes",
     "building_scene",
     "rendering_output",
     "done",

@@ -64,6 +64,7 @@ class PosterGenerator:
                 "fetching_map_data", percent, message
             ),
         )
+        reporter.emit("loading_running_routes", 60, "Loading running page routes")
         running_routes = load_running_page_routes(prepared)
         if running_routes:
             layers[RUNNING_ROUTE_LAYER] = running_routes

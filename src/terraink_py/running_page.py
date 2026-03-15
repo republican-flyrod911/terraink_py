@@ -4,8 +4,7 @@ from urllib.parse import urlparse
 
 import duckdb
 
-from .models import LocationMetadata, PosterRequest
-from .osm import ADMIN_NAME_SUFFIXES
+from .models import PosterRequest
 
 RUNNING_ROUTE_LAYER = "running_route"
 DEFAULT_RUNNING_PAGE_BRANCH = "master"
@@ -102,57 +101,6 @@ def build_raw_github_url(owner: str, repo: str, branch: str, file_path: str) -> 
         f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/"
         f"{file_path.lstrip('/')}"
     )
-
-
-def build_running_page_location_filters(
-    request: PosterRequest, location: LocationMetadata
-) -> list[str]:
-    candidates = [request.location or "", location.city, location.label]
-    filters: list[str] = []
-    seen: set[str] = set()
-    for candidate in candidates:
-        for variant in iter_location_variants(candidate):
-            if variant not in seen:
-                seen.add(variant)
-                filters.append(variant)
-    return filters
-
-
-def iter_location_variants(text: str) -> list[str]:
-    normalized = normalize_location_text(text)
-    if not normalized:
-        return []
-
-    variants = [normalized]
-    if "," in normalized:
-        primary = normalized.split(",", 1)[0].strip()
-        if primary:
-            variants.append(primary)
-
-    for value in list(variants):
-        stripped = strip_admin_suffix(value)
-        if stripped:
-            variants.append(stripped)
-
-    deduped: list[str] = []
-    seen: set[str] = set()
-    for value in variants:
-        compact = value.strip()
-        if compact and compact not in seen:
-            seen.add(compact)
-            deduped.append(compact)
-    return deduped
-
-
-def normalize_location_text(text: str) -> str:
-    return " ".join(text.replace("，", ",").split()).strip().casefold()
-
-
-def strip_admin_suffix(text: str) -> str:
-    for suffix in ADMIN_NAME_SUFFIXES:
-        if text.endswith(suffix) and len(text) > len(suffix):
-            return text[: -len(suffix)].strip()
-    return text
 
 
 def decode_polyline(value: str, *, precision: int = 5) -> list[tuple[float, float]]:
